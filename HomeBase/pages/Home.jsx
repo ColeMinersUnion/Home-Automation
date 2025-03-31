@@ -1,24 +1,24 @@
 import * as React from 'react';
 import { View, Text, Button } from 'react-native';
 
+
 const styles = {
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-}
+};
 
-export default function AddDevices({navigation}) {
-
-    return(
+export default function Home({navigation}) {
+    return (
         <View style={styles.container}>
-            <Text>Add Devices Screen</Text>
+            <Text>Home Screen</Text>
             <Button
-                title="Go to Home"
-                onPress={() => navigation.navigate('Home')}
+                title="Go to Add Devices"
+                onPress={() => navigation.navigate('Add Devices')}
             />
         </View>
-    )
-
+    );
 }
+
