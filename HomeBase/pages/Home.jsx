@@ -18,6 +18,10 @@ export default function Home({navigation}) {
                 title="Go to Add Devices"
                 onPress={() => navigation.navigate('Add Devices')}
             />
+            <Button
+                title="Go to Devices"
+                onPress={() => navigation.navigate('Devices')}
+            />
         </View>
     );
 }

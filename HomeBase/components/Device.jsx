@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 
-export default function Device({navigation, dname, dtype, daddress}) {
+export default function Device({navigation, dname, daddress}) {
 
     const [status, setStatus] = useState(false);
 
@@ -16,6 +16,7 @@ export default function Device({navigation, dname, dtype, daddress}) {
             } else {
                 console.error('Failed to toggle device');
             }
+            handleGetStatus();
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -43,11 +44,21 @@ export default function Device({navigation, dname, dtype, daddress}) {
         });
     }
 
+    handleGetStatus();
+
     return (
         <>
             <div>
                 <h1>Device: {dname}</h1>
-
+                <button onClick={handlePress}>
+                    {status ? "Turn Off" : "Turn On"}
+                </button>
+                <div>
+                    <h3>Back To Devices</h3>
+                    <button onClick={() => navigation.navigate('Devices')}>
+                        Devices
+                    </button>
+                </div>
             </div>
         </>
     );
