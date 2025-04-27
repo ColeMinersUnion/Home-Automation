@@ -7,8 +7,8 @@ export default function Device({navigation, dname, daddress}) {
 
     const handlePress = () =>{
         // address/toggle
-        fetch(`http://${daddress}/toggle`, {
-            method: 'POST',
+        fetch(`http://${daddress}/led`, {
+            method: 'GET',
         })
         .then((response) => {
             if (response.ok) {
