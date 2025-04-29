@@ -5,12 +5,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Devices from "../devices.json"; // Only used on initial load
 
-export default function LightSwitch({ navigation }) {
-    // 1️⃣ Load address ONCE and treat it as constant
-    const [deviceAddress] = useState(() => Devices.Devices[0].LightBulb.Address); // immutable
-    const storageKey = `lightbulb_title_${deviceAddress}`;
+//I don't think type will really be used
+export default function Device({navigation, route}){
+    const deviceAddress = route.params.addr; // immutable
+    const storageKey = `device_${route.params.id}`;
 
-    // 2️⃣ Load title from storage (or fallback to JSON)
+    // Load title from storage (or fallback to JSON)
     const [title, setTitle] = useState(null); // null until loaded
     const [newTitle, setNewTitle] = useState('');
     const [isEditing, setEditing] = useState(false);
@@ -20,15 +20,19 @@ export default function LightSwitch({ navigation }) {
     useEffect(() => {
         const loadTitle = async () => {
             try {
-                const savedTitle = await AsyncStorage.getItem(storageKey);
+                console.log('Device_ID:', route.params.id);
+                const device = await AsyncStorage.getItem(storageKey);
+                console.log('Device:', device);
+                const savedTitle = device ? JSON.parse(device).name : null;
                 if (savedTitle !== null) {
                     setTitle(savedTitle);
                     setNewTitle(savedTitle);
                 } else {
-                    const defaultTitle = Devices.Devices[0].LightBulb.Name;
+                    const defaultTitle = route.params.name;
                     setTitle(defaultTitle);
                     setNewTitle(defaultTitle);
                 }
+                console.log('Saved title:', savedTitle);
             } catch (error) {
                 console.error('Failed to load title:', error);
             }
@@ -38,9 +42,16 @@ export default function LightSwitch({ navigation }) {
 
     const handleSetTitle = async () => {
         try {
-            await AsyncStorage.setItem(storageKey, newTitle);
+            const deviceJson = await AsyncStorage.getItem(storageKey);
+            if (deviceJson) {
+            const device = JSON.parse(deviceJson);
+            device.name = newTitle; // Update only the name
+            await AsyncStorage.setItem(storageKey, JSON.stringify(device));
             setTitle(newTitle);
             setEditing(false);
+            } else {
+            console.error('Device not found in storage.');
+            }
         } catch (error) {
             console.error('Failed to save title:', error);
         }
@@ -99,15 +110,30 @@ export default function LightSwitch({ navigation }) {
                 </View>
 
                 <View style={styles.section}>
-                    <Button title={status ? "Turn Light Off" : "Turn Light On"} onPress={handleToggle} />
+                    <Button title={status ? `Turn ${route.params.dtype} Off` : `Turn ${route.params.dtype} On`} onPress={handleToggle} />
                     <Text style={styles.statusText}>
-                        Light is {status ? "On" : "Off"}
+                        {title} is {status ? "On" : "Off"}
                     </Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Button title="Delete Device" onPress={() => {
+                        AsyncStorage.removeItem(storageKey)
+                            .then(() => {
+                                console.log('Device deleted successfully');
+                                
+                                navigation.navigate('Device Manager', {storageKey});
+                            })
+                            .catch((error) => {
+                                console.error('Error deleting device:', error);
+                            });
+                    }} />
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

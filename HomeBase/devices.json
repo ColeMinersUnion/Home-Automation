@@ -7,6 +7,13 @@
                 "Name": "ECE Design Lab LightBulb",
                 "Address": "192.168.0.223:8000"
             }
+        },
+        {
+            "Outlet":
+            {
+                "Name": "Default Outlet",
+                "Address": "192.168.224.8000"
+            }
         }
     ]
 }

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function DeviceManager({ navigation }) {
+export default function DeviceManager({ navigation, deletedID }) {
   const [devices, setDevices] = useState([]);
   const [newDeviceName, setNewDeviceName] = useState('');
   const [newDeviceAddress, setNewDeviceAddress] = useState('');
@@ -21,14 +21,29 @@ export default function DeviceManager({ navigation }) {
   }, []);
 
   const loadDevices = async () => {
-    const ids = JSON.parse(await AsyncStorage.getItem('device_ids') || '[]');
-    const loaded = await Promise.all(
-      ids.map(async (id) => {
-        const json = await AsyncStorage.getItem(`device_${id}`);
-        return JSON.parse(json);
-      })
-    );
-    setDevices(loaded);
+    let ids = JSON.parse(await AsyncStorage.getItem('device_ids') || '[]');
+    const validDevices = [];
+    const validIds = [];
+
+    for (const id of ids) {
+      const json = await AsyncStorage.getItem(`device_${id}`);
+      try {
+        const parsed = JSON.parse(json);
+        if (parsed && parsed.id && parsed.address) {
+          validDevices.push(parsed);
+          validIds.push(id);
+        } else {
+          console.warn(`Deleting invalid device with ID: ${id}`);
+          await AsyncStorage.removeItem(`device_${id}`);
+        }
+      } catch (e) {
+        console.error(`Error parsing device with ID ${id}:`, e);
+        await AsyncStorage.removeItem(`device_${id}`);
+      }
+    }
+
+    await AsyncStorage.setItem('device_ids', JSON.stringify(validIds));
+    setDevices(validDevices);
   };
 
   const addDevice = async () => {
@@ -47,15 +62,21 @@ export default function DeviceManager({ navigation }) {
   };
 
   const navigateToDevice = (device) => {
-    navigation.navigate('LightSwitch', { device });
+    console.log('Navigating to device:', device);
+    console.log('Device ID:', device.id);
+    navigation.navigate('Device Template', { device, id: device.id, name: device.name, addr: device.address, dtype: device.type });
   };
 
+  if(deletedID !== undefined) {
+    const updatedDevices = devices.filter(device => device.id !== deletedID);
+    setDevices(updatedDevices);
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Devices</Text>
 
       <FlatList
-        data={devices}
+        data={devices.filter((item) => item != null)}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigateToDevice(item)}>
