@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, Text, Button, View, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, Text, Button, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -58,7 +58,7 @@ export default function Device({navigation, route}){
     };
 
     const handleToggle = () => {
-        fetch(`http://${deviceAddress}/led`, {
+        fetch(`http://${deviceAddress}:8000/led`, {
             method: 'GET',
         })
         .then((response) => {
@@ -84,6 +84,7 @@ export default function Device({navigation, route}){
 
     return (
         <SafeAreaProvider>
+
             <SafeAreaView style={styles.container}>
                 <View style={styles.titleContainer}>
                     {!isEditing ? (

@@ -1,6 +1,9 @@
 // DeviceManager.js
 import React, { useEffect, useState } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform, 
+  ScrollView,
   View,
   Text,
   TextInput,
@@ -72,34 +75,40 @@ export default function DeviceManager({ navigation, deletedID }) {
     setDevices(updatedDevices);
   }
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Devices</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+        <View>
+          <Text style={styles.header}>Devices</Text>
 
-      <FlatList
-        data={devices.filter((item) => item != null)}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigateToDevice(item)}>
-            <Text style={styles.deviceItem}>{item.name} ({item.address})</Text>
-          </TouchableOpacity>
-        )}
-      />
+          <FlatList
+            data={devices.filter((item) => item != null)}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => navigateToDevice(item)}>
+                <Text style={styles.deviceItem}>{item.name} ({item.address})</Text>
+              </TouchableOpacity>
+            )}
+          />
 
-      <Text style={styles.subHeader}>Add New Device</Text>
-      <TextInput
-        placeholder="Device Name"
-        value={newDeviceName}
-        onChangeText={setNewDeviceName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Device Address"
-        value={newDeviceAddress}
-        onChangeText={setNewDeviceAddress}
-        style={styles.input}
-      />
-      <Button title="Add Device" onPress={addDevice} />
-    </View>
+          <Text style={styles.subHeader}>Add New Device</Text>
+          <TextInput
+            placeholder="Device Name"
+            value={newDeviceName}
+            onChangeText={setNewDeviceName}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Device Address"
+            value={newDeviceAddress}
+            onChangeText={setNewDeviceAddress}
+            style={styles.input}
+          />
+          <Button title="Add Device" onPress={addDevice} />
+        </View>
+      
+    </KeyboardAvoidingView>
   );
 }
 
