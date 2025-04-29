@@ -15,10 +15,6 @@ export default function Home({navigation}) {
         <View style={styles.container}>
             <Text>Home Screen</Text>
             <Button
-                title="Go to Add Devices"
-                onPress={() => navigation.navigate('Add Devices')}
-            />
-            <Button
                 title="Go to Devices"
                 onPress={() => navigation.navigate('Devices')}
             />
